@@ -1,6 +1,10 @@
 import { ListBackupsCommand, ListTablesCommand } from "@aws-sdk/client-dynamodb";
 import { docClient } from "../src/config/database.js";
 
+/**
+ * Prueba la conectividad con AWS DynamoDB listando las tablas de la cuenta 
+ * y mostrando en consola la respuesta o gestionando el error en caso de fallo.
+ */
 async function testConnection() {
     console.log("Intentando conectar con AWS DynamoDB...");
 

@@ -1,5 +1,10 @@
 import { productService } from "../services/product_service.js";
 
+/**
+ * Controlador para la creación de un nuevo producto.
+ * Recibe los datos filtrados por el middleware, delega la verificación de duplicados, 
+ * generación de ID e inserción al servicio, y responde con el producto creado.
+ */
 export const createProduct = async (req, res) => {
     try {
         const {nombre, precio, stock, correo} = req.body;
@@ -27,6 +32,11 @@ export const createProduct = async (req, res) => {
     };
 };
 
+/**
+ * Controlador para la eliminación de un producto.
+ * Recibe los datos validados por el middleware y consulta al servicio para verificar que 
+ * el producto pertenezca al usuario y tenga stock en 0 antes de realizar el borrado.
+ */
 export const deleteProduct = async (req, res) => {
   try {
     const { idProducto, correo } = req.body;
@@ -51,6 +61,11 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
+/**
+ * Controlador para la consulta de productos por usuario.
+ * Recibe el parámetro correo desde req.query (validado por el middleware) y retorna 
+ * la lista de productos obtenida del servicio, filtrada y ordenada alfabéticamente.
+ */
 export const getProducts = async (req, res) => {
   try {
     const { correo } = req.query;

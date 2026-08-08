@@ -3,6 +3,11 @@ import { docClient } from "../config/database.js";
 
 const tableName = process.env.PRODUCTS_TABLE_NAME || "Products";
 
+/**
+ * Función auxiliar para generar un ID autoincrementable con formato 'P0000'.
+ * Analiza los productos existentes, extrae el número más alto omitiendo IDs no válidos (UUIDs)
+ * y genera el siguiente valor correlativo formateado a 4 dígitos con ceros a la izquierda.
+ */
 function generateID(items) {
 
   if (!items || items.length === 0) {
@@ -36,6 +41,12 @@ function generateID(items) {
 }
 
 export const productService = {
+
+    /**
+   * Consulta todos los productos en DynamoDB para verificar si ya existe un registro 
+   * perteneciente al mismo correo con el mismo nombre (ignora mayúsculas y minúsculas).
+   * Retorna la lista completa de ítems para reutilizarla y el objeto duplicado si existe.
+   */
   async findDuplicate(email, name) {
     const response = await docClient.send(new ScanCommand({
       TableName: tableName
@@ -50,6 +61,11 @@ export const productService = {
     return { allItems: items, duplicate };
   },
 
+  /**
+   * Registra un nuevo producto en DynamoDB.
+   * Valida la no duplicidad por correo y nombre, genera el ID correlativo único (P0000)
+   * y guarda el producto asegurando que precio y stock se almacenen como números.
+   */
   async create(productData) {
     const { nombre, precio, stock, correo } = productData;
 
@@ -79,6 +95,11 @@ export const productService = {
     return newProduct;
   },
 
+  /**
+   * Elimina un producto de DynamoDB evaluando las reglas de negocio.
+   * Verifica la existencia del producto mediante GetCommand, valida la pertenencia al correo
+   * y confirma que el stock sea exactamente 0 antes de proceder con el borrado.
+   */
   async delete(idProducto, correo) {
 
     const getResult = await docClient.send(new GetCommand({
@@ -108,6 +129,11 @@ export const productService = {
     return { mensaje: "Producto eliminado." };
   },
 
+  /**
+   * Obtiene todos los productos pertenecientes a un correo electrónico.
+   * Escanea la tabla en DynamoDB, filtra los registros por el correo especificado
+   * y retorna el listado ordenado alfabéticamente de la A a la Z según el nombre del producto.
+   */
   async get(correo) {
     const response = await docClient.send(new ScanCommand({
       TableName: tableName
